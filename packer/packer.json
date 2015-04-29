@@ -1,0 +1,28 @@
+{
+  "builders": [
+    {
+      "type": "docker",
+      "image": "ubuntu:14.04",
+      "export_path": "image.tar"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "sudo apt-get -y update",
+        "sudo apt-get -y install software-properties-common",
+        "sudo apt-add-repository -y ppa:ansible/ansible",
+        "sudo apt-get -y update",
+        "sudo apt-get -y upgrade",
+        "sudo apt-get -y install python-apt ansible",
+        "sudo apt-get -y clean"
+      ]
+    }
+  ],
+  "post-processors": [{
+      "type": "docker-import",
+      "repository": "tacck/ubuntu-14.04-ansible-1.7.2",
+      "tag": "0.1"
+  }]
+}
