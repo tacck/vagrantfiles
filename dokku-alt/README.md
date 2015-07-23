@@ -39,6 +39,7 @@ access http://node-js-app.192.168.100.10.xip.io/
 % git clone https://github.com/fuel/fuel.git
 % cd fuel
 % git remote add dokku dokku@192.168.100.10.xip.io:fuel
+% git checkout -b master
 ```
 ```
 % vi .gitignore
@@ -89,8 +90,9 @@ index 0000000..48aab52
 ```
 
 ```
+% ./composer.phar self-update
 % ./composer.phar install --no-dev --prefer-dist --optimize-autoloader --no-interaction
-% git add .gitignore composer.json Procfile composer.lock
+% git add .gitignore composer.json Procfile composer.phar composer.lock
 % git commit -m “comment”
 % git push dokku master
 ```
