@@ -1,0 +1,16 @@
+Vagrant.configure(2) do |config|
+  config.vm.box = "centos/7"
+  config.vm.network "forwarded_port", guest: 8000, host: 8000
+
+  config.vm.synced_folder ".", "/vagrant", disabled: false, owner: "root", group: "root"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo mkdir /home/vagrant/logs
+    sudo chmod 777 /home/vagrant/logs
+    sudo yum install -y docker
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    cd /vagrant/mysql-5.7 && sudo ./build.sh && ./run-data.sh && ./run.sh
+    cd /vagrant/php-5.6   && sudo ./build.sh && ./run.sh
+  SHELL
+end
