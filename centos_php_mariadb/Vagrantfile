@@ -1,0 +1,56 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "centos/7"
+
+  config.vm.network "private_network", ip: "192.168.33.10"
+
+  config.vm.synced_folder ".", "/vagrant", type: "rsync", disabled: true
+  config.vm.synced_folder ".", "/sync",
+      :mount_options => ["dmode=755,fmode=755"]
+
+  config.ssh.insert_key = false
+
+  config.vm.provision "file", source: "./conf/mariadb.repo", destination: "/tmp/mariadb.repo"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    sed -i.bak -e 's/^SELINUX\=enforcing/SELINUX=disabled/' /etc/selinux/config
+
+    cp /tmp/mariadb.repo /etc/yum.repos.d/mariadb.repo
+
+    yum update -y
+    yum install -y epel-release
+    yum localinstall -y http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+    yum update -y
+
+    yum install -y MariaDB-server MariaDB-client
+    yum install -y --enablerepo=remi,remi-php71 php php-devel php-mbstring php-pdo php-gd composer php-pecl-xdebug php-memcached php-mysqlnd
+  SHELL
+
+  config.vm.provision "file", source: "./conf/google-chrome.repo", destination: "/tmp/google-chrome.repo"
+  config.vm.provision "shell", inline: <<-SHELL
+    cp /tmp/google-chrome.repo /etc/yum.repos.d/google-chrome.repo
+    yum update
+    yum install -y google-chrome-stable
+    yum install -y ipa-gothic-fonts ipa-mincho-fonts ipa-pgothic-fonts ipa-pmincho-fonts
+  SHELL
+
+  config.vm.provision "file", source: "./conf/laravel-server.conf", destination: "/tmp/laravel-server.conf"
+  config.vm.provision "file", source: "./conf/15-xdebug.ini", destination: "/tmp/15-xdebug.ini"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    sed -i.bak -e 's/^User apache/User vagrant/' /etc/httpd/conf/httpd.conf
+    sed -i -e 's/^Group apache/Group vagrant/' /etc/httpd/conf/httpd.conf
+
+    cp /tmp/laravel-server.conf /etc/httpd/conf.d/laravel-server.conf
+    cp /tmp/15-xdebug.ini /etc/php.d/15-xdebug.ini
+  SHELL
+
+  config.vm.provision "shell", run: "always" do |s|
+    s.inline = <<-SHELL
+      systemctl restart httpd
+    SHELL
+  end
+
+end
