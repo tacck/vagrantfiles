@@ -3,7 +3,7 @@
   vars:
     packer_home: /home/vagrant/packer
     packer_bin: /home/vagrant/bin
-    packer_file: packer_0.7.1_linux_amd64.zip
+    packer_file: packer_0.7.5_linux_amd64.zip
   tasks:
   - name: install docker
     apt: name={{ item }} state=latest

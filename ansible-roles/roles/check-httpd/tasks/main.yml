@@ -1,0 +1,15 @@
+- name: install yum packages
+  yum: name={{ item }} state=latest
+  with_items:
+  - python-setuptools
+  - libselinux-python
+- name: install easy_install packages
+  easy_install: name=pip
+- name: install pip packages
+  pip: name=httplib2
+- name: copy index.html
+  copy: src=index.html dest=/var/www/html
+- name: start httpd
+  service: name=httpd enabled=yes state=started
+- name: check httpd is working
+  uri: url=http://localhost/

@@ -1,0 +1,6 @@
+- hosts: all
+  user: vagrant
+  become: yes
+  roles:
+    - httpd
+    - check-httpd

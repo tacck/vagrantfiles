@@ -1,0 +1,11 @@
+VAGRANTFILE_API_VERSION = "2"
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.box = "bento/centos-6.7"
+  config.vm.network :forwarded_port, guest: 80, host: 8000
+  config.vm.provision "ansible" do |ansible|
+    ansible.groups = {
+      "vagrant" => ["localhost"]
+    }
+    ansible.playbook = "vagrant.yml"
+  end
+end

@@ -1,0 +1,4 @@
+- name: install yum packages
+  yum: name={{ item }} state=latest
+  with_items:
+  - "{{ httpd_packages }}"
